@@ -3,7 +3,7 @@ const mongoose=require("mongoose")
 const bodyParser=require("body-parser")
 const app=express()
 const port=3000
-mongoose.connect("mongodb://localhost:27017/mp-dte-test")
+mongoose.connect("mongodb://localhost:27017/mp-dte")
 
 const db=mongoose.connection
 db.on("error",()=>{console.log("Error in connecting to database")})
@@ -20,27 +20,21 @@ const formSchema=new mongoose.Schema({
     "TOTAL ALLOTTED": Number,
   }
 )
-const formModel=new mongoose.model("round_first_2022",formSchema)
+const formModel=new mongoose.model("2022_firsts",formSchema)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-async function fucker(){
+async function fucker(r){
 
-    const find_branch=  await formModel.find({"JEE CLOSING RANK":{$lt:208000}})
+    const find_branch=  await formModel.find({"JEE CLOSING RANK":{$lt:r+1}})
     console.log(find_branch)
-    return  await find_branch
+    return   find_branch
 }
+app.post("/submit-form", (request,response)=>{  
+  response.send("Form Submitted")
+  console.log(request.body.rank)
+   fucker(request.body.rank)
+  
 
-app.post("/submit-form", (request,response)=>{
-    // response.send("Form Submitted")
-    //recived data would be in request.body  like this object    {
-    //     rank: '208000',
-    //     category: 'General',
-  //     round: 'Round 1',
-    //     branch: 'Computer Science'
-     //   }
-     response.json(fucker()) 
-
-    //  fucker({"JEE CLOSING RANK":{$lt:request.rank}})
 })
     
 app.listen(port,()=>{
