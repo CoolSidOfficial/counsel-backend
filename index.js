@@ -3,10 +3,12 @@ import bodyParser from "body-parser"
 import mongoose from "mongoose"
 import formSchema from "./models/formSchema.js"
 import cors from "cors"
+import dotenv from "dotenv"
 const app=express()
-const port=3000
-mongoose.connect("mongodb://localhost:27017/mp-dte",)
-
+const port=7200
+dotenv.config()
+//mongoose.connect("mongodb://localhost:27017/mp-dte",)
+mongoose.connect(process.env.MONGO_URI)
 const db=mongoose.connection
 db.on("error",()=>{console.log("Error in connecting to database")})
 db.once("open",()=>{console.log("Connected to database")})
@@ -30,9 +32,17 @@ async function Compute(recv){
   if  (recv["round"]=="Round 3"){
     data_round_name="2022_"+"third"+"s";
   } 
-  console.log(data_round_name) 
+  console.log(data_round_name)
+  let rankInt = parseInt(recv["rank"], 10);
+  if (rankInt<14000){
+   alert("There is no need to check colleges for you , you will get admission anywhere ")
+  }
   const formModel=new mongoose.model(data_round_name,formSchema)
-  const find_branchs= await formModel.find({"JEE CLOSING RANK":{$lt:recv["rank"]},"BRANCH":recv["branch"]},{"INSTITUTE NAME":1,'JEE OPENING RANK':1,"_id":0})
+  const find_branchs= await formModel.find(
+   {"JEE CLOSING RANK":{$lt:rankInt}
+   ,"BRANCH":recv["branch"]},
+   {"INSTITUTE NAME":1,
+      'JEE OPENING RANK':1,"_id":0})
   console.log(await find_branchs)
   return await find_branchs
 }
@@ -40,7 +50,7 @@ async function Compute(recv){
   response.status(200)
   const recv= request.query
   response.json(await Compute(recv))   
-  //  console.log(rank,category)  
+   // console.log(recv)  
 
 
 }) 
