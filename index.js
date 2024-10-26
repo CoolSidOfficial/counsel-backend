@@ -39,10 +39,10 @@ async function Compute(recv){
   }
   const formModel=new mongoose.model(data_round_name,formSchema)
   const find_branchs= await formModel.find(
-   {"JEE CLOSING RANK":{$lt:rankInt}
+   {"JEE CLOSING RANK":{$gt:rankInt}
    ,"BRANCH":recv["branch"]},
    {"INSTITUTE NAME":1,
-      'JEE OPENING RANK':1,"_id":0})
+      'JEE OPENING RANK':1,'JEE CLOSING RANK':1,"_id":0})
   console.log(await find_branchs)
   return await find_branchs
 }
