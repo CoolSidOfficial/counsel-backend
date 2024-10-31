@@ -4,6 +4,7 @@ import mongoose from "mongoose"
 import formSchema from "./models/formSchema.js"
 import cors from "cors"
 import dotenv from "dotenv"
+import { Logger } from "./logger.js"
 const app=express()
 const port=7200
 dotenv.config()
@@ -19,7 +20,6 @@ db.once("open",()=>{console.log("Connected to database")})
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors())
-
 
 async function Compute(recv){
   let data_round_name="2022_"+"first"+"s"
@@ -48,7 +48,10 @@ async function Compute(recv){
 }
  app.get("/submit-form", async (request,response)=>{  
   response.status(200)
+  const clientIp = request.ip;
+  const b_data=request.get("User-Agent")
   const recv= request.query
+  Logger(clientIp,b_data)
   response.json(await Compute(recv))   
    // console.log(recv)  
 
