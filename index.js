@@ -6,7 +6,7 @@ import cors from "cors"
 import dotenv from "dotenv"
 import { Logger } from "./logger.js"
 const app=express()
-const port=7200
+const port = process.env.PORT || 7200
 dotenv.config()
 // mongoose.connect("mongodb://localhost:27017/mp-dte",)
 mongoose.connect(process.env.MONGO_URI)
